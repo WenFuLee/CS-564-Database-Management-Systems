@@ -40,7 +40,9 @@ BufMgr::~BufMgr() {
 
 void BufMgr::advanceClock()
 {
-
+	clockHand++;
+	clockHand %= numBufs; 
+	
 }
 
 void BufMgr::allocBuf(FrameId & frame) 
