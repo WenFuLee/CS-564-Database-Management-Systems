@@ -91,9 +91,12 @@ void BufMgr::advanceClock()
 
 void BufMgr::allocBuf(FrameId & frame) 
 {
+	FrameId firstFrame = this->clockHand;
+	int count = 0;
 	while (true) {
 		this->advanceClock();
 		frame = this->clockHand;
+
 		if (!this->bufDescTable[frame].valid) {
 			return;
 		} else {
@@ -103,6 +106,10 @@ void BufMgr::allocBuf(FrameId & frame)
 			}
 
 			if (this->bufDescTable[frame].pinCnt > 0) {
+				++count;
+				if (frame == firstFrame + 1 && count == numBufs) {
+					throw BufferExceededException();
+				}
 				continue;
 			}
 
@@ -122,7 +129,7 @@ void BufMgr::readPage(File* file, const PageId pageNo, Page*& page)
 	FrameId frameNo;
 	try {
 		this->hashTable->lookup(file, pageNo, frameNo);
-		*page = bufPool[frameNo];
+		page = &this->bufPool[frameNo];
 		this->bufDescTable[frameNo].refbit = true; // check whether it should be true or false later.
 		this->bufDescTable[frameNo].pinCnt++;
 	} 
@@ -135,7 +142,11 @@ void BufMgr::readPage(File* file, const PageId pageNo, Page*& page)
 		this->hashTable->insert(file, pageNo, frameNo);
 		this->bufDescTable[frameNo].Set(file, pageNo);
 		this->bufPool[frameNo] = diskPage;
-		*page = bufPool[frameNo];
+		page = &this->bufPool[frameNo];
+	}
+	catch (...)
+	{
+		std::cout << "Unknown exception!" << std::endl;
 	}
 }
 
@@ -153,10 +164,11 @@ void BufMgr::unPinPage(File* file, const PageId pageNo, const bool dirty)
 			this->bufDescTable[frameNo].dirty = true;
 		}
 	}
+	/*
 	catch(PageNotPinnedException)
 	{
 		std::cout << "PageNotPinnedException" << std::endl;
-	}
+	}*/
 	catch(HashNotFoundException)
 	{
 		std::cout << "HashNotFoundException" << std::endl;
@@ -203,19 +215,24 @@ void BufMgr::flushFile(const File* file)
 		catch (BadBufferException) {
 			std::cout << "An invalid page belonging to the file is encountered!" << std::endl;
 		}
+		catch (...)
+		{
+			std::cout << "Unknown exception!" << std::endl;
+		}
     }
 }
 
 void BufMgr::allocPage(File* file, PageId &pageNo, Page*& page) 
 {
 	Page diskPage = file->allocatePage();
+	
 	pageNo = diskPage.page_number();
 	FrameId frameNo;
 	this->allocBuf(frameNo);
 	this->hashTable->insert(file, pageNo, frameNo);
 	this->bufDescTable[frameNo].Set(file, pageNo);
 	this->bufPool[frameNo] = diskPage;
-	*page = bufPool[frameNo];
+	page = &this->bufPool[frameNo];
 }
 
 void BufMgr::disposePage(File* file, const PageId PageNo)
@@ -234,6 +251,10 @@ void BufMgr::disposePage(File* file, const PageId PageNo)
 	catch (HashNotFoundException)
 	{
 		std::cout << "Page not in buffer!" << std::endl;
+	}
+	catch (...)
+	{
+		std::cout << "Unknown exception!" << std::endl;
 	}
 
 	file->deletePage(PageNo);
