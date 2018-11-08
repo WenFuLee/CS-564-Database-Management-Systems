@@ -38,10 +38,49 @@ BufMgr::BufMgr(std::uint32_t bufs)
 
 BufMgr::~BufMgr() {
 	for (FrameId i = 0; i < numBufs; i++) {
-		//if dirty -> flush
-		bufDescTable[i].frameNo = i;
-		bufDescTable[i].valid = false;
+		try
+		{	
+			/*
+			if (this->bufDescTable[i].pinCnt > 0) {
+				throw PagePinnedException(this->bufDescTable[i].file->filename(), this->bufDescTable[i].pageNo, i);
+			}
+
+			
+			// not sure if it is necessary to check validation.
+			if (!this->bufDescTable[i].valid) {
+				throw BadBufferException(i,
+										this->bufDescTable[i].dirty,
+										this->bufDescTable[i].valid,
+										this->bufDescTable[i].refbit);
+			}
+			*/
+
+			if (this->bufDescTable[i].dirty) {
+				this->bufDescTable[i].file->writePage(this->bufPool[i]);
+				this->bufDescTable[i].dirty = false;
+			}
+			/*
+			this->hashTable->remove(this->bufDescTable[i].file, this->bufDescTable[i].pageNo);
+			this->bufDescTable[i].Clear();
+			this->bufPool[i] = Page();
+			*/
+		}
+		/*
+		catch (PagePinnedException) {
+			std::cout << "Page of the file is pinned!" << std::endl;
+		}
+		catch (BadBufferException) {
+			std::cout << "An invalid page belonging to the file is encountered!" << std::endl;
+		}
+		*/
+		catch (...)
+		{
+		}
 	}
+
+	delete bufPool;
+	delete bufDescTable;
+	delete hashTable;
 }
 
 void BufMgr::advanceClock()
@@ -52,7 +91,30 @@ void BufMgr::advanceClock()
 
 void BufMgr::allocBuf(FrameId & frame) 
 {
-	// clock algorithm
+	while (true) {
+		this->advanceClock();
+		frame = this->clockHand;
+		if (!this->bufDescTable[frame].valid) {
+			return;
+		} else {
+			if (this->bufDescTable[frame].refbit) {
+				this->bufDescTable[frame].refbit = false;
+				continue;
+			}
+
+			if (this->bufDescTable[frame].pinCnt > 0) {
+				continue;
+			}
+
+			if (this->bufDescTable[frame].dirty) {
+				this->bufDescTable[frame].file->writePage(this->bufPool[frame]);
+			}
+
+			this->hashTable->remove(this->bufDescTable[frame].file, this->bufDescTable[frame].pageNo);
+			this->bufDescTable[frame].Clear();
+			return;
+		}
+	}
 }
 	
 void BufMgr::readPage(File* file, const PageId pageNo, Page*& page)
@@ -128,8 +190,9 @@ void BufMgr::flushFile(const File* file)
 			}
 			this->hashTable->remove(file, pageNo);
 			this->bufDescTable[frameNo].Clear();
-			this->bufPool[frameNo] = Page();
+			//this->bufPool[frameNo] = Page();
 		}
+		// Not sure if it is ok to interrupt the whole process once exception happened.
 		catch (HashNotFoundException)
 		{
 			std::cout << "Page not in buffer!" << std::endl;
@@ -166,7 +229,7 @@ void BufMgr::disposePage(File* file, const PageId PageNo)
 		}
 		this->bufDescTable[frameNo].Clear();
 		this->hashTable->remove(file, PageNo);
-		this->bufPool[frameNo] = Page();
+		//this->bufPool[frameNo] = Page();
 	} 
 	catch (HashNotFoundException)
 	{
