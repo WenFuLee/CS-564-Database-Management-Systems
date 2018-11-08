@@ -91,7 +91,6 @@ void BufMgr::advanceClock()
 
 void BufMgr::allocBuf(FrameId & frame) 
 {
-	FrameId firstFrame = this->clockHand;
 	int count = 0;
 	while (true) {
 		this->advanceClock();
@@ -107,7 +106,7 @@ void BufMgr::allocBuf(FrameId & frame)
 
 			if (this->bufDescTable[frame].pinCnt > 0) {
 				++count;
-				if (frame == firstFrame + 1 && count == numBufs) {
+				if (count == numBufs * 2) {
 					throw BufferExceededException();
 				}
 				continue;
@@ -209,15 +208,8 @@ void BufMgr::flushFile(const File* file)
 		{
 			std::cout << "Page not in buffer!" << std::endl;
 		}
-		catch (PagePinnedException) {
-			std::cout << "Page of the file is pinned!" << std::endl;
-		}
 		catch (BadBufferException) {
 			std::cout << "An invalid page belonging to the file is encountered!" << std::endl;
-		}
-		catch (...)
-		{
-			std::cout << "Unknown exception!" << std::endl;
 		}
     }
 }
