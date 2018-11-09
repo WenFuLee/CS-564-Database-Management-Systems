@@ -78,8 +78,8 @@ BufMgr::~BufMgr() {
 		}
 	}
 
-	delete bufPool;
-	delete bufDescTable;
+	delete [] bufDescTable;
+    delete [] bufPool;
 	delete hashTable;
 }
 
