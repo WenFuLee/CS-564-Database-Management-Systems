@@ -1,4 +1,8 @@
 /**
+ * Wen-Fu Lee         wlee256@wisc.edu    9077987502
+ * Shang-Yen Yeh      syeh6@wisc.edu      9079956299
+ * Yahn-Chung Chen    chen666@wisc.edu    9075858895
+ * 
  * @author See Contributors.txt for code contributors and overview of BadgerDB.
  *
  * @section LICENSE
