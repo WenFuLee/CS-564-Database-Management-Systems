@@ -50,8 +50,7 @@ def render_template(template_name, **context):
 
 #####################END HELPER METHODS#####################
 
-urls = ('/*', 'auction_base',
-        '/currtime', 'curr_time',
+urls = ('/currtime', 'curr_time',
         '/selecttime', 'select_time',
         '/add_bid', 'add_bid',
         '/search', 'search'
@@ -59,9 +58,9 @@ urls = ('/*', 'auction_base',
         # first parameter => URL, second parameter => class name
         )
 
-class auction_base:
-    def GET(self):
-        return render_template('app_base.html')
+# class auction_base:
+#     def GET(self):
+#         return render_template('app_base.html')
 
 class search:
     def GET(self):
