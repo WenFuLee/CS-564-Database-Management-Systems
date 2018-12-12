@@ -83,7 +83,7 @@ class add_bid:
 
         update_message = 'Successfully added new bid'
 
-        return render_template('add_bid.html', message = update_message)
+        return render_template('add_bid.html', message = update_message, add_result = True)
 
 class curr_time:
     # A simple GET request, to '/currtime'
