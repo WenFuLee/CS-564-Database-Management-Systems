@@ -78,8 +78,12 @@ class add_bid:
         userID = post_params['userID']
         price = post_params['price']
 
-        sqlitedb.insertBid(itemID, userID, price)
+        current_time = string_to_time(sqlitedb.getTime())
+        sqlitedb.insertBid(itemID, userID, price, current_time)
 
+        update_message = 'Successfully added new bid'
+
+        return render_template('add_bid.html', message = update_message)
 
 class curr_time:
     # A simple GET request, to '/currtime'
@@ -87,7 +91,7 @@ class curr_time:
     # Notice that we pass in `current_time' to our `render_template' call
     # in order to have its value displayed on the web page
     def GET(self):
-        current_time = sqlitedb.getTime()
+        current_time = string_to_time(sqlitedb.getTime())
         return render_template('curr_time.html', time = current_time)
 
 class select_time:
@@ -114,7 +118,8 @@ class select_time:
         selected_time = '%s-%s-%s %s:%s:%s' % (yyyy, MM, dd, HH, mm, ss)
         update_message = '(Hello, %s. Previously selected time was: %s.)' % (enter_name, selected_time)
         # TODO: save the selected time as the current time in the database
-        sqlitedb.setCurrentTime(selected_time)
+        
+        sqlitedb.setCurrentTime(string_to_time(selected_time))
         # Here, we assign `update_message' to `message', which means
         # we'll refer to it in our template as `message'
         return render_template('select_time.html', message = update_message)

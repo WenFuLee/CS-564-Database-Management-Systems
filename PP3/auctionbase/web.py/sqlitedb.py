@@ -1,4 +1,8 @@
 import web
+import sys
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 db = web.database(dbn='sqlite',
         db='AuctionBase.db' #TODO: add your SQLite database filename
@@ -53,16 +57,12 @@ def setCurrentTime(new_current_time):
 
 # def search
 
-def insertBid(itemID, userID, price):
-    current_time = getTime()
+def insertBid(itemID, userID, price, current_time):
     # TODO: 
     # Check if itemID is valid
     # Check if time is valid (time should before the closed time of itemID)
-    print type(itemID)
-    print type(userID)
-    print type(price)
 
-    db.insert('Bids', ItemID=, UserID=, Amount=, Time=current_time)
+    db.insert('Bids', ItemID=itemID, UserID=userID, Amount=price, Time=current_time)
 
 
 # wrapper method around web.py's db.query method
