@@ -72,6 +72,8 @@ class search:
         
         itemID = post_params['itemID']
         userID = post_params['userID']
+        category = post_params['category']
+        itemDescription = post_params['item_description']
         minPrice = post_params['minPrice']
         maxPrice = post_params['maxPrice']
         status = post_params['status'] # open/close/all/notStarted
