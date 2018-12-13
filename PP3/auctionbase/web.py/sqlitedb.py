@@ -65,8 +65,10 @@ def setCurrentTime(new_current_time):
             retMessage = "The current time can only advance forward."
         return False, retMessage
 
-def searchItem(itemID, userID, minPrice, maxPrice):
+def searchItem(itemID, userID, category, itemDescription, minPrice, maxPrice):
     condition = ''
+    table = 'Items'
+    
     if (itemID != ''):
         condition = condition + 'ItemID = ' + itemID
     
@@ -82,7 +84,22 @@ def searchItem(itemID, userID, minPrice, maxPrice):
         else:
             condition = condition + 'Currently <= ' + maxPrice
 
-    query_string = 'select * from Items where {}'.format(condition)
+    if (itemDescription != ''):
+        if (condition != ''):
+            condition = condition + ' and Description LIKE \'%{}%\''.format(itemDescription)
+        else:
+            condition = condition + 'Description LIKE \'%{}%\''.format(itemDescription)
+
+    if (category != ''):
+        table = table + ', Categories'
+        if (condition != ''):
+            condition = condition + ' and Items.ItemID = Categories.ItemID and Categories.Category = \'{}\''.format(category)
+        else:
+            condition = condition + 'Items.ItemID = Categories.ItemID and Categories.Category = \'{}\''.format(category)
+
+    print(table)
+    print(condition)
+    query_string = 'select * from {} where {}'.format(table, condition)
     result = query(query_string)
     return result
 

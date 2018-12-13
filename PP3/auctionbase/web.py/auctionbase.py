@@ -77,7 +77,7 @@ class search:
         maxPrice = post_params['maxPrice']
         status = post_params['status'] # open/close/all/notStarted
         
-        result = sqlitedb.searchItem(itemID, userID, minPrice, maxPrice)
+        result = sqlitedb.searchItem(itemID, userID, category, itemDescription, minPrice, maxPrice)
  
         search_result = []
         for s in result:
