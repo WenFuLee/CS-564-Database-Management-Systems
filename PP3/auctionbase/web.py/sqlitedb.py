@@ -47,23 +47,56 @@ def getTime():
 # a given ID), this will throw an Exception!
 def getItemById(item_id):
     # TODO: rewrite this method to catch the Exception in case `result' is empty
-    query_string = 'select * from Items where item_ID = $itemID'
-    result = query(query_string, {'itemID': item_id})
-    return result[0]
+    try:
+        query_string = 'select * from Items where ItemID = $itemID'
+        result = query(query_string, {'itemID': item_id})
+        return result[0]
+    except Exception as e:
+        return {}
 
 def setCurrentTime(new_current_time):
-    current_time = getTime()
-    db.update('CurrentTime', where='Time=$current_time', Time=new_current_time, vars=locals())
+    try:
+        current_time = getTime()
+        db.update('CurrentTime', where='Time=$current_time', Time=new_current_time, vars=locals())
+        return True, ""
+    except Exception as e:
+        retMessage = e.message
+        if (retMessage == 'Trigger1_Failed') :
+            retMessage = "The current time can only advance forward."
+        return False, retMessage
 
 # def search
 
 def insertBid(itemID, userID, price, current_time):
     # TODO: 
-    # Check if itemID is valid
-    # Check if time is valid (time should before the closed time of itemID)
+    try:
+        itemData = getItemById(itemID)
+        if (itemData) :
+            print itemData['Buy_Price'] 
+            if ((itemData['Buy_Price'] != None) and (itemData['Currently'] >= itemData['Buy_Price'])) :
+                return False, "The Auction has already closed."
+        else:
+            return False, "Item ID is invalid."
+        db.insert('Bids', ItemID=itemID, UserID=userID, Amount=price, Time=current_time)
+        # incrementation for number of bids is handled by trigger4
 
-    db.insert('Bids', ItemID=itemID, UserID=userID, Amount=price, Time=current_time)
-
+        return True, ("Successfully added new bid: " + str(itemID) + ", " + str(userID) + ", " + str(price) + ", " + str(current_time))
+    except Exception as e:
+        retMessage = e.message
+        if (retMessage == 'FOREIGN KEY constraint failed') :
+            retMessage = "User ID is invalid."
+        elif (retMessage == 'Trigger5_Failed') :
+            retMessage = "No auction may have a bid before its start time."
+        elif (retMessage == 'Trigger6_Failed') :
+            retMessage = "No auction may have a bid after its end time."
+        elif (retMessage == 'Trigger3_Failed') :
+            retMessage = "You need to offer higher price."
+        elif (retMessage == 'Trigger7_Failed') :
+            retMessage = "A user may not bid on an item he or she is also selling."   
+        elif (retMessage == 'UNIQUE constraint failed: Bids.ItemID, Bids.Time') :
+            retMessage = "No auction may have two bids at the exact same time."
+ 
+        return False, retMessage
 
 # wrapper method around web.py's db.query method
 # check out http://webpy.org/cookbook/query for more info
