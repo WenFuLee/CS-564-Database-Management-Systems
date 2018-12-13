@@ -66,6 +66,29 @@ class search:
     def GET(self):
         return render_template('search.html')
 
+    def POST(self):
+        # pass
+        post_params = web.input()
+        
+        itemID = post_params['itemID']
+        userID = post_params['userID']
+        minPrice = post_params['minPrice']
+        maxPrice = post_params['maxPrice']
+        status = post_params['status'] # open/close/all/notStarted
+        
+        search_result = sqlitedb.searchItem(itemID, userID, minPrice, maxPrice, status)
+        print(search_result['ItemID'])
+        print(search_result['Description'])
+        
+        #print(post_params)
+        #print(status)
+        #print(itemID)
+        #print(userID)
+        #print(minPrice)
+        #print(maxPrice)
+        
+        return render_template('search.html', search_result = search_result)
+
 class add_bid:
     def GET(self):
         return render_template('add_bid.html')

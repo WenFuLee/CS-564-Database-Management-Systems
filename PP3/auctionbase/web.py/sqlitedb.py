@@ -65,7 +65,8 @@ def setCurrentTime(new_current_time):
             retMessage = "The current time can only advance forward."
         return False, retMessage
 
-# def search
+def searchItem(itemID, userID, minPrice, maxPrice, status):
+    return getItemById(itemID)
 
 def insertBid(itemID, userID, price, current_time):
     # TODO: 
