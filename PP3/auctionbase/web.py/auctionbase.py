@@ -67,7 +67,6 @@ class search:
         return render_template('search.html')
 
     def POST(self):
-        # pass
         post_params = web.input()
         
         itemID = post_params['itemID']
@@ -78,18 +77,28 @@ class search:
         maxPrice = post_params['maxPrice']
         status = post_params['status'] # open/close/all/notStarted
         
-        search_result = sqlitedb.searchItem(itemID, userID, minPrice, maxPrice, status)
-        print(search_result['ItemID'])
-        print(search_result['Description'])
-        
-        #print(post_params)
-        #print(status)
-        #print(itemID)
-        #print(userID)
-        #print(minPrice)
-        #print(maxPrice)
-        
+        result = sqlitedb.searchItem(itemID, userID, minPrice, maxPrice)
+ 
+        search_result = []
+        for s in result:
+            Started = string_to_time(s.Started)
+            Ends = string_to_time(s.Ends)
+            current_time = string_to_time(sqlitedb.getTime())
+            if (status == 'open'):
+                if (Started <= current_time and current_time < Ends):
+                    search_result.append(s)
+            elif (status == 'close'):
+                if (Ends <= current_time):
+                    search_result.append(s)
+            elif (status == 'notStarted'):
+                if (current_time < Started):
+                    search_result.append(s)
+            else: #all
+                search_result.append(s)
+  
         return render_template('search.html', search_result = search_result)
+
+
 
 class add_bid:
     def GET(self):

@@ -65,8 +65,26 @@ def setCurrentTime(new_current_time):
             retMessage = "The current time can only advance forward."
         return False, retMessage
 
-def searchItem(itemID, userID, minPrice, maxPrice, status):
-    return getItemById(itemID)
+def searchItem(itemID, userID, minPrice, maxPrice):
+    condition = ''
+    if (itemID != ''):
+        condition = condition + 'ItemID = ' + itemID
+    
+    if (minPrice != ''):
+        if (condition != ''):
+            condition = condition + ' and Currently >= ' + minPrice
+        else:
+            condition = condition + 'Currently >= ' + minPrice
+    
+    if (maxPrice != ''):
+        if (condition != ''):
+            condition = condition + ' and Currently <= ' + maxPrice
+        else:
+            condition = condition + 'Currently <= ' + maxPrice
+
+    query_string = 'select * from Items where {}'.format(condition)
+    result = query(query_string)
+    return result
 
 def insertBid(itemID, userID, price, current_time):
     # TODO: 
