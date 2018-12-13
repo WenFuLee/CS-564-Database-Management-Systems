@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:auctionbase/web.py/auctionbase.py">
+   </FileRef>
+   <FileRef
+      location = "group:auctionbase/web.py/lib">
+   </FileRef>
+   <FileRef
+      location = "group:auctionbase/web.py/sqlitedb.py">
+   </FileRef>
+   <FileRef
+      location = "group:auctionbase/web.py/templates">
+   </FileRef>
+</Workspace>

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python 
 
 import sys; sys.path.insert(0, 'lib') # this line is necessary for the rest
 import os                             # of the imports to work!
