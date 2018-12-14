@@ -97,9 +97,10 @@ def searchItem(itemID, userID, category, itemDescription, minPrice, maxPrice):
         else:
             condition = condition + 'Items.ItemID = Categories.ItemID and Categories.Category = \'{}\''.format(category)
 
-    print(table)
-    print(condition)
-    query_string = 'select * from {} where {}'.format(table, condition)
+    if condition == '':
+        query_string = 'select * from {}'.format(table)
+    else:
+        query_string = 'select * from {} where {}'.format(table, condition)
     result = query(query_string)
     return result
 
