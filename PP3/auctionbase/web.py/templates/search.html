@@ -44,18 +44,35 @@
 <ul>
 {% if search_result %}
 {% for result in search_result %}
-	{% for key in result %}
-		<div>
-			<span>{{ key|e }}</span>
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<span>{{ result[key]|e }}</span>
+	<div class="panel-group" id="accordion">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<a data-toggle="collapse" data-parent="#accordion" href="#item{{result['ItemID']|e}}">{{ 'ItemID:'|e }} {{ result['ItemID']|e }}</a>
+				</h4>
+			</div>
+			<div id="item{{result['ItemID']|e}}" class="panel-collapse collapse">
+				<div class="panel-body">
+					<ul>
+						{% for key in result %}
+							<li>
+								<div>
+									<span>{{ key|e }}</span>
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									<span>{{ result[key]|e }}</span>
+								</div>
+							</li>
+						{% endfor %}
+					</ul>
+					<a href={{"./see_detail?ItemID=" ~ result['ItemID'] }}><span>&nbsp;&nbsp;&nbsp;&nbsp;see details...</span></a>
+				</div>
+			</div>
 		</div>
-  	{% endfor %}
-  	<div>--------</div>
+	</div>	
 {% endfor %}
 {% else %}
 <div>No results</div>
 {% endif %}
 </ul>
-
 {% endblock %}
+
