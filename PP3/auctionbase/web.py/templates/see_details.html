@@ -1,0 +1,105 @@
+{% extends "app_base.html" %}
+{% block content %}
+
+<h3>Item ID {{ item_result['ItemID']|e }}</h3>
+
+<h5>
+	<span>Status:&nbsp;</span> 
+	{% if status == 'Close' %}
+		<span class="label label-danger">CLOSED</span>
+	{% elif status == 'Open' %}
+		<span class="label label-success">OPEN</span>
+	{% elif status == 'Not Started' %}
+		<span class="label label-warning">NOT STARTED</span>
+	{% endif %}
+</h5>
+	
+<h5>
+	<span>Categories:&nbsp;</span>
+	{% for category in categories_result %}
+		<span>{{ category['Category']|e }};&nbsp;</span>
+	{% endfor %}
+</h5>
+
+<h5>
+	<span>Name:&nbsp;</span>
+	<span>{{ item_result['Name']|e }}</span>
+</h5>
+
+<h5>
+	<span>Currently:&nbsp;</span>
+	<span>{{ item_result['Currently']|e }}</span>
+</h5>
+
+<h5>
+	<span>First Bid:&nbsp;</span>
+	<span>{{ item_result['First_Bid']|e }}</span>
+</h5>
+
+<h5>
+	<span>Buy Price:&nbsp;</span>
+	<span>{{ item_result['Buy_Price']|e }}</span>
+</h5>
+
+<h5>
+	<span>Number of Bids:&nbsp;</span>
+	<span>{{ item_result['Number_of_Bids']|e }}</span>
+</h5>
+
+<h5>
+	<span>Start Time:&nbsp;</span>
+	<span>{{ item_result['Started']|e }}</span>
+</h5>
+
+<h5>
+	<span>End Time:&nbsp;</span>
+	<span>{{ item_result['Ends']|e }}</span>
+</h5>
+
+<h5>
+	<span>Seller:&nbsp;</span>
+	<span>{{ item_result['Seller_UserID']|e }}</span>
+</h5>
+
+<h5>
+	<div>Bids:</div>
+	<ul>
+		{% if bids_result %}
+			{% for bid in bids_result %}
+				<div>
+					<span>Bidder ID:</span>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<span>{{ bid['UserID']|e }}</span>
+				</div>	
+				<div>
+					<span>Time of Bid:</span>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<span>{{ bid['Time']|e }}</span>
+				</div>
+				<div>
+					<span>Price of Bid:</span>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<span>{{ bid['Amount']|e }}</span>
+				</div>	
+				<div>--------</div>
+			{% endfor %}
+		{% else %}
+		<div>No Bid</div>
+		{% endif %}
+	</ul>
+</h5>
+
+{% if status == 'Close' %}
+	{% if last_bidder %}
+		<h5>
+				<span>Winner:&nbsp;</span>
+				<span>{{ last_bidder['UserID']|e }}</span>
+		</h5>
+	{% endif %}
+{% endif %}
+
+<h5>
+		<span>Description:&nbsp;</span>
+		<span>{{ item_result['Description']|e }}</span>
+</h5>
+{% endblock %}

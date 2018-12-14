@@ -103,6 +103,21 @@ def searchItem(itemID, userID, category, itemDescription, minPrice, maxPrice):
     result = query(query_string)
     return result
 
+def searchItemDetails(itemID):
+    itemResult = getItemById(itemID)
+
+    queryCategories = 'select distinct(Category) from {} where {}'.format('Categories', 'ItemID = ' + itemID)
+    categoriesResult = query(queryCategories)
+
+    queryBids = 'select * from {} where {}'.format('Bids', 'ItemID = ' + itemID)
+    bidsResult = query(queryBids)
+    
+    print categoriesResult
+    print "_______________________________"
+    print bidsResult
+
+    return itemResult, categoriesResult, bidsResult
+
 def insertBid(itemID, userID, price, current_time):
     # TODO: 
     try:

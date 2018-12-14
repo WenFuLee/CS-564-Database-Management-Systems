@@ -53,7 +53,8 @@ def render_template(template_name, **context):
 urls = ('/currtime', 'curr_time',
         '/selecttime', 'select_time',
         '/add_bid', 'add_bid',
-        '/search', 'search'
+        '/search', 'search',
+        '/see_detail', 'see_detail'
         # TODO: add additional URLs here
         # first parameter => URL, second parameter => class name
         )
@@ -97,8 +98,6 @@ class search:
                 search_result.append(s)
   
         return render_template('search.html', search_result = search_result)
-
-
 
 class add_bid:
     def GET(self):
@@ -159,6 +158,23 @@ class select_time:
         # we'll refer to it in our template as `message'
         return render_template('select_time.html', message = update_message)
 
+class see_detail:
+    def GET(self):
+        itemID = web.input().ItemID
+        itemResult, categoriesResult, bidsResult = sqlitedb.searchItemDetails(itemID)
+        currentTime = sqlitedb.getTime()
+
+        status = "Open"
+        time = string_to_time(currentTime)
+        if (time >= string_to_time(itemResult["Ends"]) or (itemResult["Buy_Price"] != None and int(itemResult["Currently"]) >= int(itemResult["Buy_Price"]))) :
+            status = "Close"
+        elif (time < string_to_time(itemResult["Started"])) :
+            status = "Not Started"
+        
+        lastBidder = bidsResult[-1] if bidsResult else {}
+
+        return render_template('see_details.html', item_result = itemResult, categories_result = categoriesResult, bids_result = bidsResult, status = status, last_bidder = lastBidder)
+ 
 ###########################################################################################
 ##########################DO NOT CHANGE ANYTHING BELOW THIS LINE!##########################
 ###########################################################################################
