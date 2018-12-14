@@ -50,7 +50,8 @@ def render_template(template_name, **context):
 
 #####################END HELPER METHODS#####################
 
-urls = ('/currtime', 'curr_time',
+urls = ('/', 'auction_base',
+        '/currtime', 'curr_time',
         '/selecttime', 'select_time',
         '/add_bid', 'add_bid',
         '/search', 'search',
@@ -59,9 +60,9 @@ urls = ('/currtime', 'curr_time',
         # first parameter => URL, second parameter => class name
         )
 
-# class auction_base:
-#     def GET(self):
-#         return render_template('app_base.html')
+class auction_base:
+    def GET(self):
+        return render_template('app_base.html')
 
 class search:
     def GET(self):
@@ -86,10 +87,11 @@ class search:
             Ends = string_to_time(s.Ends)
             current_time = string_to_time(sqlitedb.getTime())
             if (status == 'open'):
-                if (Started <= current_time and current_time < Ends):
+                if (Started <= current_time and current_time < Ends
+                    and (s.Buy_Price == None or s.Currently < s.Buy_Price)):
                     search_result.append(s)
-            elif (status == 'close'):
-                if (Ends <= current_time):
+            elif (status == 'close' ):
+                if (Ends <= current_time or (s.Buy_Price != None and s.Currently >= s.Buy_Price)):
                     search_result.append(s)
             elif (status == 'notStarted'):
                 if (current_time < Started):
