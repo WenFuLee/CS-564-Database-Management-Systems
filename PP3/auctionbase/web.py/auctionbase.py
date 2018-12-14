@@ -50,7 +50,7 @@ def render_template(template_name, **context):
 
 #####################END HELPER METHODS#####################
 
-urls = ('/', 'auction_base',
+urls = ('/', 'home_page',
         '/currtime', 'curr_time',
         '/selecttime', 'select_time',
         '/add_bid', 'add_bid',
@@ -60,9 +60,9 @@ urls = ('/', 'auction_base',
         # first parameter => URL, second parameter => class name
         )
 
-class auction_base:
+class home_page:
     def GET(self):
-        return render_template('app_base.html')
+        return render_template('home_page.html')
 
 class search:
     def GET(self):
@@ -72,14 +72,13 @@ class search:
         post_params = web.input()
         
         itemID = post_params['itemID']
-        userID = post_params['userID']
         category = post_params['category']
         itemDescription = post_params['item_description']
         minPrice = post_params['minPrice']
         maxPrice = post_params['maxPrice']
         status = post_params['status'] # open/close/all/notStarted
         
-        result = sqlitedb.searchItem(itemID, userID, category, itemDescription, minPrice, maxPrice)
+        result = sqlitedb.searchItem(itemID, category, itemDescription, minPrice, maxPrice)
  
         search_result = []
         for s in result:
@@ -112,6 +111,9 @@ class add_bid:
         itemID = post_params['itemID']
         userID = post_params['userID']
         price = post_params['price']
+
+        if (price == '') :
+            return render_template('add_bid.html', message = "Bid price is invalid.", add_result = False)    
 
         current_time = sqlitedb.getTime()
         addResult , update_message = sqlitedb.insertBid(itemID, userID, price, current_time)
