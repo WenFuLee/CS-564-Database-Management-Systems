@@ -6,7 +6,18 @@ drop trigger if exists trigger3;
 
 create trigger trigger3
 	before insert on Bids
-	for each row when (NEW.Amount <= (Select i.Currently from Items i where NEW.ItemID = i.ItemID AND i.Number_Of_Bids > 0))
+	for each row
+		when EXISTS (
+			SELECT 1
+			FROM Items i
+			WHERE New.ItemID = i.ItemID
+			AND 
+			(
+				i.Number_of_Bids > 0 AND NEW.Amount <= i.Currently
+				OR
+				i.Number_of_Bids == 0 AND NEW.AMOUNT < i.Currently
+			)
+		)
 	begin
 		SELECT raise(rollback, 'Trigger3_Failed');
 	end;

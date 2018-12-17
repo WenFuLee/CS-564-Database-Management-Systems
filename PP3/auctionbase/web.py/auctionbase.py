@@ -170,7 +170,7 @@ class see_detail:
 
         status = "Open"
         time = string_to_time(currentTime)
-        if (time >= string_to_time(itemResult["Ends"]) or (itemResult["Buy_Price"] != None and int(itemResult["Currently"]) >= int(itemResult["Buy_Price"]))) :
+        if (time >= string_to_time(itemResult["Ends"]) or (itemResult["Buy_Price"] != None and float(itemResult["Currently"]) >= float(itemResult["Buy_Price"]))) :
             status = "Close"
         elif (time < string_to_time(itemResult["Started"])) :
             status = "Not Started"

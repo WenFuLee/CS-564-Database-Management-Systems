@@ -125,7 +125,7 @@ def insertBid(itemID, userID, price, current_time):
         itemData = getItemById(itemID)
         if (itemData) :
             print itemData['Buy_Price'] 
-            if ((itemData['Buy_Price'] != None) and (int(itemData['Currently']) >= int(itemData['Buy_Price']))) :
+            if ((itemData['Buy_Price'] != None) and (float(itemData['Currently']) >= float(itemData['Buy_Price']))) :
                 return False, "The Auction has already closed."
         else:
             return False, "Item ID is invalid."
